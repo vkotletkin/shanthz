@@ -1,0 +1,6 @@
+.var {items} {["Котлин", "Quarkdown", "Spring"]}
+
+### Список технологий:
+.for {item} in {$items} {
+    * Технология: **$item**
+}

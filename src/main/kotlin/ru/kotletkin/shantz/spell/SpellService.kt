@@ -4,6 +4,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.languagetool.JLanguageTool
 import org.languagetool.rules.RuleMatch
 import org.springframework.stereotype.Service
+import ru.kotletkin.shantz.exception.NotFoundException
 import ru.kotletkin.shantz.spell.dto.SpellDTO
 import ru.kotletkin.shantz.spell.dto.SpellLanguage
 
@@ -13,7 +14,7 @@ class SpellService(private val langToolPool: GenericKeyedObjectPool<String, JLan
     fun checkSpellingOnLanguage(spellDTO: SpellDTO): List<RuleMatch> {
 
         val languageRepresentation = runCatching { SpellLanguage.valueOf(spellDTO.language).representation }
-            .getOrElse { throw RuntimeException("Language ${spellDTO.language} does not exist", it) }
+            .getOrElse { throw NotFoundException("Язык с именем: ${spellDTO.language} - не найден") }
 
         var languageTool: JLanguageTool? = null
         return try {
