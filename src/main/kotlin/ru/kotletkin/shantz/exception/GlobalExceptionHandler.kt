@@ -76,7 +76,7 @@ class GlobalExceptionHandler {
             else -> "Некорректный синтаксис JSON или пропущено обязательное поле"
         }
 
-        logger.warn { "Ошибка парсинга JSON: $detailMessage" }
+        logger.error { "Ошибка парсинга JSON: $detailMessage" }
 
         return ErrorResponse(
             title = "Ошибка чтения JSON",
