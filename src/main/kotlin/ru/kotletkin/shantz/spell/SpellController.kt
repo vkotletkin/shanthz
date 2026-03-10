@@ -13,15 +13,15 @@ private val logger = KotlinLogging.logger {}
 @RequestMapping("/api/spell")
 class SpellController(private val spellService: SpellService) {
 
-    @GetMapping
-    fun getSpellingLanguages(): List<String> {
-        logger.info { "Запрошены поддерживаемые языки" }
-        return spellService.getSpellingLanguages()
-    }
-
     @PostMapping
     fun checkSpell(@Valid @RequestBody spellDTO: SpellDTO): List<RuleMatch> {
         logger.info { "Запрошена валидация текста по языку: ${spellDTO.language}" }
         return spellService.checkSpellingOnLanguage(spellDTO)
+    }
+
+    @GetMapping("/languages")
+    fun getSpellingLanguages(): List<String> {
+        logger.info { "Запрошены поддерживаемые языки" }
+        return spellService.getSpellingLanguages()
     }
 }

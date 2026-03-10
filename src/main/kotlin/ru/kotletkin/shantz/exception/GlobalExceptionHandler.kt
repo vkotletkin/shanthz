@@ -23,7 +23,14 @@ class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException::class)
     fun handleNotFoundException(ex: NotFoundException): ErrorResponse {
         logger.error { ex.message }
-        return ErrorResponse("Не найдено", ex.message ?: "Детали не указаны")
+        return ErrorResponse(title = "Не найдено", message = ex.message ?: "Детали не указаны")
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(SpellCheckingException::class)
+    fun handleSpellCheckingException(ex: SpellCheckingException): ErrorResponse {
+        logger.error { ex.message }
+        return ErrorResponse(title = "Проблема при проверке текста", message = ex.message ?: "Детали не указаны")
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

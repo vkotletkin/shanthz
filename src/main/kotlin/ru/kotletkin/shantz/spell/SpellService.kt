@@ -5,6 +5,7 @@ import org.languagetool.JLanguageTool
 import org.languagetool.rules.RuleMatch
 import org.springframework.stereotype.Service
 import ru.kotletkin.shantz.exception.NotFoundException
+import ru.kotletkin.shantz.exception.SpellCheckingException
 import ru.kotletkin.shantz.spell.dto.SpellDTO
 import ru.kotletkin.shantz.spell.dto.SpellLanguage
 
@@ -17,14 +18,16 @@ class SpellService(private val langToolPool: GenericKeyedObjectPool<String, JLan
             .getOrElse { throw NotFoundException("Язык с именем: ${spellDTO.language} - не найден") }
 
         var languageTool: JLanguageTool? = null
-        return try {
+        val matches = try {
             languageTool = langToolPool.borrowObject(languageRepresentation)
             languageTool.check(spellDTO.text)
-        } catch (e: Exception) {
-            throw RuntimeException("ERROR WITH CHECK DETECT", e) // TODO
+        } catch (_: Exception) {
+            throw SpellCheckingException("Ошибка при проверке текста на наличие ошибок")
         } finally {
             languageTool?.let { langToolPool.returnObject(languageRepresentation, it) }
         }
+
+        return emptyList()
     }
 
     fun getSpellingLanguages(): List<String> {
