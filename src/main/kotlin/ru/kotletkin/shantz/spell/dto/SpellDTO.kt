@@ -1,10 +1,10 @@
 package ru.kotletkin.shantz.spell.dto
 
-import jakarta.validation.constraints.NotBlank
+import org.languagetool.rules.SuggestedReplacement
 
 data class SpellDTO(
-    @field:NotBlank("Текст не может быть пустым")
-    val text: String,
-    @field:NotBlank("Язык не может быть пустым")
-    val language: String
+    val message: String,
+    val fromPos: Int,
+    val toPos: Int,
+    val suggestedReplacements: List<String>
 )
