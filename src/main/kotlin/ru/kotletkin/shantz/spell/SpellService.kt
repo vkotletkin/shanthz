@@ -15,10 +15,6 @@ import javax.annotation.PostConstruct
 @Service
 class SpellService(private val langToolPool: GenericKeyedObjectPool<String, JLanguageTool>) {
 
-    @PostConstruct
-    fun init() {
-    }
-
     fun checkSpellingOnLanguage(spellRequest: SpellRequest): List<SpellDTO> {
 
         val languageRepresentation = runCatching { SpellLanguage.valueOf(spellRequest.language).representation }
