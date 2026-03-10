@@ -5,12 +5,17 @@ import org.apache.commons.pool2.PooledObject
 import org.apache.commons.pool2.impl.DefaultPooledObject
 import org.languagetool.JLanguageTool
 import org.languagetool.Languages
+import java.io.File
 
 class LangToolPooledObjectFactory : KeyedPooledObjectFactory<String, JLanguageTool> {
 
     override fun makeObject(languageKey: String): PooledObject<JLanguageTool> {
         val language = Languages.getLanguageForShortCode(languageKey)
         val languageTool = JLanguageTool(language)
+
+        // WARNING! We need put ngrams models to this directory!
+        languageTool.activateLanguageModelRules(File("src/main/resources"))
+
         return DefaultPooledObject(languageTool)
     }
 

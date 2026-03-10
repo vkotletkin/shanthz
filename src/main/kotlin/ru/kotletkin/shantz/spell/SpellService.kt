@@ -4,14 +4,20 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.languagetool.JLanguageTool
 import org.languagetool.rules.RuleMatch
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.PostMapping
 import ru.kotletkin.shantz.exception.NotFoundException
 import ru.kotletkin.shantz.exception.SpellCheckingException
 import ru.kotletkin.shantz.spell.dto.SpellDTO
 import ru.kotletkin.shantz.spell.dto.SpellLanguage
 import ru.kotletkin.shantz.spell.dto.SpellRequest
+import javax.annotation.PostConstruct
 
 @Service
 class SpellService(private val langToolPool: GenericKeyedObjectPool<String, JLanguageTool>) {
+
+    @PostConstruct
+    fun init() {
+    }
 
     fun checkSpellingOnLanguage(spellRequest: SpellRequest): List<SpellDTO> {
 
