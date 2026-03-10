@@ -4,26 +4,32 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool
 import org.languagetool.JLanguageTool
 import org.languagetool.rules.RuleMatch
 import org.springframework.stereotype.Service
+import ru.kotletkin.shantz.exception.NotFoundException
+import ru.kotletkin.shantz.exception.SpellCheckingException
 import ru.kotletkin.shantz.spell.dto.SpellDTO
 import ru.kotletkin.shantz.spell.dto.SpellLanguage
+import ru.kotletkin.shantz.spell.dto.SpellRequest
 
 @Service
 class SpellService(private val langToolPool: GenericKeyedObjectPool<String, JLanguageTool>) {
 
-    fun checkSpellingOnLanguage(spellDTO: SpellDTO): List<RuleMatch> {
+    fun checkSpellingOnLanguage(spellRequest: SpellRequest): List<SpellDTO> {
 
-        val languageRepresentation = runCatching { SpellLanguage.valueOf(spellDTO.language).representation }
-            .getOrElse { throw RuntimeException("Language ${spellDTO.language} does not exist", it) }
+        val languageRepresentation = runCatching { SpellLanguage.valueOf(spellRequest.language).representation }
+            .getOrElse { throw NotFoundException("Язык с именем: ${spellRequest.language} - не найден") }
 
         var languageTool: JLanguageTool? = null
-        return try {
+        val matches = try {
             languageTool = langToolPool.borrowObject(languageRepresentation)
-            languageTool.check(spellDTO.text)
-        } catch (e: Exception) {
-            throw RuntimeException("ERROR WITH CHECK DETECT", e) // TODO
+            languageTool.check(spellRequest.text)
+        } catch (_: Exception) {
+            throw SpellCheckingException("Ошибка при проверке текста на наличие ошибок")
         } finally {
             languageTool?.let { langToolPool.returnObject(languageRepresentation, it) }
         }
+
+        val corrections = matches.map { SpellDTO(it.message, it.fromPos, it.toPos, it.suggestedReplacements) }
+        return corrections
     }
 
     fun getSpellingLanguages(): List<String> {
